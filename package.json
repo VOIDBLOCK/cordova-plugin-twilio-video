@@ -1,7 +1,7 @@
 {
     "version": "1.2.1",
     "name": "cordova-plugin-twilio-video",
-    "cordova_name": "Twilio video plugin",
+    "cordova_name": "Twilio video chat plugin, developed by VOIDBLOCK LLC",
     "license": "Apache 2.0",
     "platforms": [
         "android",

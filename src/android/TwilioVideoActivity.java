@@ -313,7 +313,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
         }
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
-        setDisconnectAction();
+        // setDisconnectAction();
     }
 
     /*
