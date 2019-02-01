@@ -935,12 +935,12 @@ public class TwilioVideoActivity extends AppCompatActivity {
         CallEventsProducer.getInstance().publishEvent(event);
     }
 
-    private void setWidthAndHeight(Context context, RelativeLayout view, int width, int height) {
+    /* private void setWidthAndHeight(Context context, RelativeLayout view, int width, int height) {
         width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, context.getResources().getDisplayMetrics());//used to convert you width integer value same as dp
         height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, context.getResources().getDisplayMetrics());
         //note : if your layout is LinearLayout then use LinearLayout.LayoutParam
         view.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
-    }
+    } */
 
     private int getDeviceDimen(Boolean returnWidth) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
