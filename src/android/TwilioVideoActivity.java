@@ -329,11 +329,11 @@ public class TwilioVideoActivity extends AppCompatActivity {
      */
     private void initializeUI() {
         isViewResizeAllowed = config.getEnableWidgetResize();
-        
+
         if (config.getPrimaryColorHex() != null) {
             int primaryColor = Color.parseColor(config.getPrimaryColorHex());
             ColorStateList color = ColorStateList.valueOf(primaryColor);
-            
+
             // connectActionFab.setBackgroundTintList(color);
             resizeActionFab.setBackgroundTintList(color);
 
@@ -366,7 +366,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
      */
     private void setExtraActions() {
         resizeActionFab.show();
-        connectActionFab.setOnClickListener(resizeClickListener());
+        resizeActionFab.setOnClickListener(resizeClickListener());
 
         // connectActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
         // connectActionFab.show();
@@ -743,7 +743,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
 
                 int icon;
                 int height;
-                
+
                 if (isViewExpanded == true) {
                     isViewExpanded = false;
                     height         = 120;
@@ -753,7 +753,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
                     height         = getDeviceDimen(false);
                     icon           = R.drawable.ic_expand_white_24px;
                 }
-                
+
                 resizeActionFab.setImageDrawable(ContextCompat.getDrawable(TwilioVideoActivity.this, icon));
                 rootPluginWidget.getLayoutParams().height = height;
                 rootPluginWidget.requestLayout();

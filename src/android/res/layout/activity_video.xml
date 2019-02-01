@@ -5,8 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom"
+    android:layout_height="140dp"
+    android:gravity="center_vertical"
     android:fitsSystemWindows="true"
     tools:context="org.apache.cordova.twiliovideo.VideoActivity">
 
@@ -15,9 +15,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:gravity="bottom|start"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:gravity="top|start"
         android:orientation="horizontal" >
 
         <android.support.design.widget.FloatingActionButton
@@ -36,7 +36,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_switch_camera_512dp"
             app:fabSize="mini"
-            app:backgroundTint="#A74A50" 
+            app:backgroundTint="#A74A50"
             />
 
         <android.support.design.widget.FloatingActionButton
@@ -54,8 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_videocam_green_24px" 
-            app:backgroundTint="#A74A50" 
+            android:src="@drawable/ic_videocam_green_24px"
+            app:backgroundTint="#A74A50"
             app:fabSize="mini"
             />
 
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_mic_green_24px" 
+            android:src="@drawable/ic_mic_green_24px"
             app:fabSize="mini"
             app:backgroundTint="#A74A50"
             />
