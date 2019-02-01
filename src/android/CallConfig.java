@@ -28,6 +28,7 @@ public class CallConfig implements Serializable {
     private String i18nDisconnectedWithError;
     private String i18nAccept;
     private boolean handleErrorInApp;
+    private boolean enableWidgetResize;
 
     public void parse(JSONObject config) {
         if (config == null) { return; }
