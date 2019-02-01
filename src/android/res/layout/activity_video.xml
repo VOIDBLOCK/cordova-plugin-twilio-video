@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     android:id="@+id/plugin_root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="108dp"
     android:gravity="center_vertical"
     android:fitsSystemWindows="true"
+    android:background="#f1f1f1"
     tools:context="org.apache.cordova.twiliovideo.VideoActivity">
 
     <include layout="@layout/content_video" />
@@ -15,7 +16,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:layout_marginStart="5dp"
         android:gravity="top|start"
         android:orientation="horizontal" >
@@ -71,4 +72,9 @@
 
     </LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+    <!--<org.apache.cordova.engine.SystemWebView-->
+        <!--android:id="@+id/plugin_cordova_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+</RelativeLayout>

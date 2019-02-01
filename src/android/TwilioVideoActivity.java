@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
@@ -21,7 +22,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.LayoutInflater;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.twilio.video.CameraCapturer;
@@ -49,8 +56,11 @@ import java.util.Collections;
 
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+import org.apache.cordova.CordovaPlugin;
 
 public class TwilioVideoActivity extends AppCompatActivity {
+
+    private CordovaPlugin pluginInstance;
 
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "TwilioVideoActivity";
@@ -92,7 +102,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private CameraCapturerCompat cameraCapturer;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
-    private CoordinatorLayout rootPluginWidget;
+    private RelativeLayout rootPluginWidget;
     private FloatingActionButton resizeActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
@@ -106,19 +116,26 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private VideoRenderer localVideoView;
     private boolean disconnectedFromOnDestroy;
     private boolean isViewResizeAllowed = true;
-    private boolean isViewExpanded      = true;
+    private boolean isViewExpanded      = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         publishEvent(CallEvent.OPENED);
-        setContentView(R.layout.activity_video);
+
+        LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, Math.round(convertDpToPixel(108)));
+        // lp.gravity = Gravity.BOTTOM;
+
+        View nativeVideoControls = LayoutInflater.from(TwilioVideoActivity.this).inflate(R.layout.activity_video, null);
+        addContentView(nativeVideoControls, lp);
+
+        // setContentView(R.layout.activity_video);
 
         primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
         thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
 
-        rootPluginWidget = (CoordinatorLayout) findViewById(R.id.plugin_root_view);
+        rootPluginWidget = (RelativeLayout) findViewById(R.id.plugin_root_view);
         resizeActionFab = (FloatingActionButton) findViewById(R.id.resize_action_fab);
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
@@ -742,11 +759,11 @@ public class TwilioVideoActivity extends AppCompatActivity {
                 }
 
                 int icon;
-                int height;
+                float height;
 
                 if (isViewExpanded == true) {
                     isViewExpanded = false;
-                    height         = 120;
+                    height         = convertDpToPixel(108);
                     icon           = R.drawable.ic_contract_white_24px;
                 } else {
                     isViewExpanded = true;
@@ -755,8 +772,9 @@ public class TwilioVideoActivity extends AppCompatActivity {
                 }
 
                 resizeActionFab.setImageDrawable(ContextCompat.getDrawable(TwilioVideoActivity.this, icon));
-                rootPluginWidget.getLayoutParams().height = height;
+                rootPluginWidget.getLayoutParams().height = Math.round(height);
                 rootPluginWidget.requestLayout();
+
             }
         };
     }
@@ -935,14 +953,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
         CallEventsProducer.getInstance().publishEvent(event);
     }
 
-    /* private void setWidthAndHeight(Context context, RelativeLayout view, int width, int height) {
-        width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, context.getResources().getDisplayMetrics());//used to convert you width integer value same as dp
-        height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, context.getResources().getDisplayMetrics());
-        //note : if your layout is LinearLayout then use LinearLayout.LayoutParam
-        view.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
-    } */
-
-    private int getDeviceDimen(Boolean returnWidth) {
+    private float getDeviceDimen(Boolean returnWidth) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowmanager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -950,6 +961,18 @@ public class TwilioVideoActivity extends AppCompatActivity {
         int deviceWidth = displayMetrics.widthPixels;
         int deviceHeight = displayMetrics.heightPixels;
 
-        return !!returnWidth ? deviceWidth : deviceHeight;
+        return (float) (!!returnWidth ? deviceWidth : deviceHeight);
+    }
+
+    public static float convertPixelsToDp(float px){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return Math.round(dp);
+    }
+
+    public static float convertDpToPixel(float dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
     }
 }
