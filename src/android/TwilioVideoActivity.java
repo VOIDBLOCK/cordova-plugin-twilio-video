@@ -736,16 +736,18 @@ public class TwilioVideoActivity extends AppCompatActivity {
                 if (! isViewResizeAllowed) {
                     return;
                 }
+
+                int icon;
                 
                 if (isViewExpanded == true) {
                     isViewExpanded = false;
-                    resizeActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_contract_white_24px));
+                    icon           = R.drawable.ic_contract_white_24px;
                 } else {
                     isViewExpanded = true;
-                    resizeActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_expand_white_24px));
+                    icon           = R.drawable.ic_expand_white_24px;
                 }
 
-                // finish();
+                resizeActionFab.setImageDrawable(ContextCompat.getDrawable(TwilioVideoActivity.this, icon));
             }
         };
     }
