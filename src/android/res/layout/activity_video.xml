@@ -10,14 +10,14 @@
 
     <include layout="@layout/content_video" />
 
-    <android.support.design.widget.FloatingActionButton
+    <!-- <android.support.design.widget.FloatingActionButton
         android:id="@+id/connect_action_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_call_white_24px"
-        app:backgroundTint="#f76c6c" />
+        app:backgroundTint="#f76c6c" /> -->
         
     <LinearLayout
         android:layout_width="match_parent"

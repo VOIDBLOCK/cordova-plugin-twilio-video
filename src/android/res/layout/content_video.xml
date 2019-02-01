@@ -15,7 +15,7 @@
         android:visibility="gone"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_margin="24dp"
+        android:layout_margin="15dp"
         android:layout_gravity="bottom|start"/>
 
     <com.twilio.video.VideoView

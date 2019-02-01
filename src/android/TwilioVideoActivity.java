@@ -88,7 +88,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private CameraCapturerCompat cameraCapturer;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
-    private FloatingActionButton connectActionFab;
+    // private FloatingActionButton connectActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
@@ -111,7 +111,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
         primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
         thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
 
-        connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
+        // connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
         muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
@@ -320,11 +320,11 @@ public class TwilioVideoActivity extends AppCompatActivity {
      * The initial state when there is no active conversation.
      */
     private void initializeUI() {
-        if (config.getPrimaryColorHex() != null) {
-            int primaryColor = Color.parseColor(config.getPrimaryColorHex());
-            ColorStateList color = ColorStateList.valueOf(primaryColor);
-            connectActionFab.setBackgroundTintList(color);
-        }
+        // if (config.getPrimaryColorHex() != null) {
+        //     int primaryColor = Color.parseColor(config.getPrimaryColorHex());
+        //     ColorStateList color = ColorStateList.valueOf(primaryColor);
+        //     connectActionFab.setBackgroundTintList(color);
+        // }
 
         if (config.getSecondaryColorHex() != null) {
             int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
@@ -349,9 +349,9 @@ public class TwilioVideoActivity extends AppCompatActivity {
      * The actions performed during disconnect.
      */
     private void setDisconnectAction() {
-        connectActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
-        connectActionFab.show();
-        connectActionFab.setOnClickListener(disconnectClickListener());
+        // connectActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
+        // connectActionFab.show();
+        // connectActionFab.setOnClickListener(disconnectClickListener());
     }
 
     /*
