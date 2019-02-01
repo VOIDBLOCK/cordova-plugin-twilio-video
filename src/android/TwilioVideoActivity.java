@@ -89,6 +89,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
     // private FloatingActionButton connectActionFab;
+    private FloatingActionButton resizeActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
@@ -100,6 +101,8 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private boolean previousMicrophoneMute;
     private VideoRenderer localVideoView;
     private boolean disconnectedFromOnDestroy;
+    private boolean isViewResizeAllowed = true;
+    private boolean isViewExpanded      = true;
 
 
     @Override
@@ -112,6 +115,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
         thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
 
         // connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
+        resizeActionFab = (FloatingActionButton) findViewById(R.id.resize_action_fab);
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
         muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
@@ -313,18 +317,26 @@ public class TwilioVideoActivity extends AppCompatActivity {
         }
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
-        // setDisconnectAction();
+        setExtraActions();
     }
 
     /*
      * The initial state when there is no active conversation.
      */
     private void initializeUI() {
-        // if (config.getPrimaryColorHex() != null) {
-        //     int primaryColor = Color.parseColor(config.getPrimaryColorHex());
-        //     ColorStateList color = ColorStateList.valueOf(primaryColor);
-        //     connectActionFab.setBackgroundTintList(color);
-        // }
+        isViewResizeAllowed = config.getEnableWidgetResize();
+        
+        if (config.getPrimaryColorHex() != null) {
+            int primaryColor = Color.parseColor(config.getPrimaryColorHex());
+            ColorStateList color = ColorStateList.valueOf(primaryColor);
+            
+            // connectActionFab.setBackgroundTintList(color);
+            resizeActionFab.setBackgroundTintList(color);
+
+            if (! isViewResizeAllowed) {
+                resizeActionFab.hide();
+            }
+        }
 
         if (config.getSecondaryColorHex() != null) {
             int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
@@ -346,9 +358,12 @@ public class TwilioVideoActivity extends AppCompatActivity {
      }
 
     /*
-     * The actions performed during disconnect.
+     * Extra attached actions.
      */
-    private void setDisconnectAction() {
+    private void setExtraActions() {
+        resizeActionFab.show();
+        connectActionFab.setOnClickListener(resizeClickListener());
+
         // connectActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_call_end_white_24px));
         // connectActionFab.show();
         // connectActionFab.setOnClickListener(disconnectClickListener());
@@ -708,6 +723,29 @@ public class TwilioVideoActivity extends AppCompatActivity {
             @Override
             public void onVideoTrackDisabled(RemoteParticipant remoteParticipant, RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
+            }
+        };
+    }
+
+    private View.OnClickListener resizeClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "Resize button clicked!");
+
+                if (! isViewResizeAllowed) {
+                    return;
+                }
+                
+                if (isViewExpanded == true) {
+                    isViewExpanded = false;
+                    resizeActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_contract_white_24px));
+                } else {
+                    isViewExpanded = true;
+                    resizeActionFab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_expand_white_24px));
+                }
+
+                // finish();
             }
         };
     }
