@@ -28,7 +28,7 @@ if (process.env.TARGET) {
           var packageName = configobj.installed_plugins["cordova-plugin-twilio-video"]["PACKAGE_NAME"];
           console.log("With the package name: "+packageName);
           console.log("Adding import for R.java");
-            replace_string_in_file(val,"IMPORT R class HERE","import "+packageName+".R;");
+            replace_string_in_file(val, "// IMPORT R class HERE", "import "+packageName+".R;");
 
         } else {
             console.log("No android platform found! :(");

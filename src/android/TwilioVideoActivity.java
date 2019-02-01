@@ -1,5 +1,5 @@
 package org.apache.cordova.twiliovideo;
-IMPORT R class HERE
+// IMPORT R class HERE
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -15,6 +15,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -45,6 +46,9 @@ import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
 
 import java.util.Collections;
+
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 public class TwilioVideoActivity extends AppCompatActivity {
 
@@ -88,7 +92,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
     private CameraCapturerCompat cameraCapturer;
     private LocalAudioTrack localAudioTrack;
     private LocalVideoTrack localVideoTrack;
-    // private FloatingActionButton connectActionFab;
+    private CoordinatorLayout rootPluginWidget;
     private FloatingActionButton resizeActionFab;
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
@@ -114,7 +118,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
         primaryVideoView = (VideoView) findViewById(R.id.primary_video_view);
         thumbnailVideoView = (VideoView) findViewById(R.id.thumbnail_video_view);
 
-        // connectActionFab = (FloatingActionButton) findViewById(R.id.connect_action_fab);
+        rootPluginWidget = (CoordinatorLayout) findViewById(R.id.plugin_root_view);
         resizeActionFab = (FloatingActionButton) findViewById(R.id.resize_action_fab);
         switchCameraActionFab = (FloatingActionButton) findViewById(R.id.switch_camera_action_fab);
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
@@ -738,16 +742,21 @@ public class TwilioVideoActivity extends AppCompatActivity {
                 }
 
                 int icon;
+                int height;
                 
                 if (isViewExpanded == true) {
                     isViewExpanded = false;
+                    height         = 120;
                     icon           = R.drawable.ic_contract_white_24px;
                 } else {
                     isViewExpanded = true;
+                    height         = getDeviceDimen(false);
                     icon           = R.drawable.ic_expand_white_24px;
                 }
-
+                
                 resizeActionFab.setImageDrawable(ContextCompat.getDrawable(TwilioVideoActivity.this, icon));
+                rootPluginWidget.getLayoutParams().height = height;
+                rootPluginWidget.requestLayout();
             }
         };
     }
@@ -926,4 +935,21 @@ public class TwilioVideoActivity extends AppCompatActivity {
         CallEventsProducer.getInstance().publishEvent(event);
     }
 
+    private void setWidthAndHeight(Context context, RelativeLayout view, int width, int height) {
+        width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, context.getResources().getDisplayMetrics());//used to convert you width integer value same as dp
+        height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, context.getResources().getDisplayMetrics());
+        //note : if your layout is LinearLayout then use LinearLayout.LayoutParam
+        view.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+    }
+
+    private int getDeviceDimen(Boolean returnWidth) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowmanager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
+
+        int deviceWidth = displayMetrics.widthPixels;
+        int deviceHeight = displayMetrics.heightPixels;
+
+        return !!returnWidth ? deviceWidth : deviceHeight;
+    }
 }
