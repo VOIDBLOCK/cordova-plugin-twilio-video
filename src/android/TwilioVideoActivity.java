@@ -30,7 +30,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.CameraCapturer.CameraSource;
 import com.twilio.video.ConnectOptions;
@@ -51,12 +50,11 @@ import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
 import com.twilio.video.VideoTrack;
 import com.twilio.video.VideoView;
-
 import java.util.Collections;
-
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import org.apache.cordova.CordovaPlugin;
+
 
 public class TwilioVideoActivity extends AppCompatActivity {
 

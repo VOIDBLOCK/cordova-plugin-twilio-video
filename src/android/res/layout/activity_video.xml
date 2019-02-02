@@ -5,11 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="108dp"
+    android:layout_height="104dp"
     android:gravity="center_vertical"
     android:fitsSystemWindows="true"
     android:background="#f1f1f1"
-    tools:context="org.apache.cordova.twiliovideo.VideoActivity">
+    tools:context="org.apache.cordova.twiliovideo.TwilioVideoActivity">
 
     <include layout="@layout/content_video" />
 
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_contract_white_24px"
+            android:src="@drawable/ic_expand_white_24px"
             app:fabSize="mini"
             app:backgroundTint="#5B4B4B" />
 

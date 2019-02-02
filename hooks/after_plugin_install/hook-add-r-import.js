@@ -19,7 +19,8 @@ if (process.env.TARGET) {
   // Add java files where you want to add R.java imports in the following array
 
     var filestoreplace = [
-        "platforms/android/app/src/main/java/org/apache/cordova/twiliovideo/TwilioVideoActivity.java"
+        "platforms/android/app/src/main/java/org/apache/cordova/twiliovideo/TwilioVideoActivity.java",
+        "platforms/android/app/src/main/java/org/apache/cordova/twiliovideo/TwilioVideo.java"
     ];
     filestoreplace.forEach(function(val, index, array) {
         if (fs.existsSync(val)) {
