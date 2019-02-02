@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="104dp"
+    android:layout_height="82dp"
     android:gravity="center_vertical"
     android:fitsSystemWindows="true"
     android:background="#f1f1f1"
@@ -16,10 +16,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
-        android:layout_marginStart="5dp"
         android:gravity="top|start"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/resize_action_fab"
@@ -27,8 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_expand_white_24px"
+            app:backgroundTint="#818181"
             app:fabSize="mini"
-            app:backgroundTint="#5B4B4B" />
+            app:rippleColor="@android:color/holo_blue_bright" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/switch_camera_action_fab"
@@ -36,9 +37,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_switch_camera_512dp"
+            app:backgroundTint="#D84E57"
             app:fabSize="mini"
-            app:backgroundTint="#A74A50"
-            />
+            app:rippleColor="@android:color/holo_purple" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/switch_audio_action_fab"
@@ -46,9 +47,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_phonelink_ring_white_24dp"
+            app:backgroundTint="#D84E57"
             app:fabSize="mini"
-            app:backgroundTint="#A74A50"
-            />
+            app:rippleColor="@android:color/holo_purple" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/local_video_action_fab"
@@ -56,9 +57,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_videocam_green_24px"
-            app:backgroundTint="#A74A50"
+            app:backgroundTint="#D84E57"
             app:fabSize="mini"
-            />
+            app:rippleColor="@android:color/holo_purple" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/mute_action_fab"
@@ -66,9 +67,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_mic_green_24px"
+            app:backgroundTint="#D84E57"
             app:fabSize="mini"
-            app:backgroundTint="#A74A50"
-            />
+            app:rippleColor="@android:color/holo_purple" />
 
     </LinearLayout>
 

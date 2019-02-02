@@ -58,8 +58,6 @@ import org.apache.cordova.CordovaPlugin;
 
 public class TwilioVideoActivity extends AppCompatActivity {
 
-    private CordovaPlugin pluginInstance;
-
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "TwilioVideoActivity";
 
@@ -948,7 +946,7 @@ public class TwilioVideoActivity extends AppCompatActivity {
     }
 
     private void publishEvent(CallEvent event) {
-        CallEventsProducer.getInstance().publishEvent(event);
+        CallEventsProducer.getInstance().publishEvent("open", event);
     }
 
     private float getDeviceDimen(Boolean returnWidth) {

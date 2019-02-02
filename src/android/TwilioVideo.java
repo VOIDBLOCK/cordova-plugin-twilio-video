@@ -77,7 +77,7 @@ public class TwilioVideo extends CordovaPlugin {
     private boolean isViewExpanded      = false;
 
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
-    private static final String TAG = "TwilioVideoActivity";
+    private static final String TAG = "TwilioVideo";
 
     /*
      * Audio and video tracks can be created with names. This feature is useful for categorizing
@@ -137,60 +137,119 @@ public class TwilioVideo extends CordovaPlugin {
         // your init code here
     }
 
-    
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		this.callbackContext = callbackContext;
 		if (action.equals("openRoom")) {
-		    this.registerCallListener(callbackContext);
+		    this.registerCallListener(CallEventsProducer.OPEN_LISTENER_KEYWORD, callbackContext);
 		   	this.openRoom(args);
+		}
+		else if (action.equals("leaveRoom")) {
+		    this.registerCallListener(CallEventsProducer.CLOSE_LISTENER_KEYWORD, callbackContext);
+		   	this.leaveRoom();
+		}
+		else if (action.equals("widgetVisibility")) {
+            Boolean makeVisible = false;
+
+            if (args.length() > 0) {
+                makeVisible = args.getBoolean(0);
+            }
+            
+		    this.registerCallListener(CallEventsProducer.VISIBILITY_LISTENER_KEYWORD, callbackContext);
+            this.widgetVisibility(makeVisible);
+		}
+		else if (action.equals("toggleMic")) {
+            Boolean setEnabled = false;
+
+            if (args.length() > 0) {
+                setEnabled = args.getBoolean(0);
+            }
+            
+		    this.registerCallListener(CallEventsProducer.MIC_TOGGLE_LISTENER_KEYWORD, callbackContext);
+            this.toggleMic(setEnabled);
+		}
+		else if (action.equals("setActiveSpeaker")) {
+            String particpantId = args.getString(0);
+            this.setActiveSpeaker(particpantId);
+		    // this.registerCallListener("set_active_speaker", callbackContext);
 		}
         return true;
 	}
 
-	public void openRoom(final JSONArray args) {
+    public void openRoom(final JSONArray args) {
         try {
-    	 	this.token = args.getString(0);
+            this.token = args.getString(0);
             this.roomId = args.getString(1);
             that = this;
             final String token = this.token;
             final String roomId = this.roomId;
 
-            this.accessToken = token;
-
+            this.accessToken       = token;
+            Boolean launchActivity = false;
+            
             if (args.length() > 2) {
                 this.config.parse(args.getJSONObject(2));
+            }
+
+            if (args.length() > 3) {
+                launchActivity = args.getBoolean(3);
             }
 
             LOG.d("TOKEN", token);
             LOG.d("ROOMID", roomId);
 
-            // cordova.getThreadPool().execute
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    initWidgetViews();
-
-//                    activity.getWindow().setAttributes(new WindowManager.LayoutParams(screenW, screenH));
-//                    activity.getWindow().setLayout(screenW, heightDiff);
-
-
-//                    Intent intentTwilioVideo = new Intent(that.cordova.getActivity().getBaseContext(), TwilioVideoActivity.class);
-//        			intentTwilioVideo.putExtra("token", token);
-//                    intentTwilioVideo.putExtra("roomId", roomId);
-//                    intentTwilioVideo.putExtra("config", config);
-//                    intentTwilioVideo.setPackage(that.cordova.getActivity().getApplicationContext().getPackageName());
-//                    that.cordova.startActivityForResult(that, intentTwilioVideo, 0);
-//                    intentTwilioVideo.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    that.cordova.startActivityForResult(that, intentTwilioVideo);
-//                    that.cordova.getActivity().startActivity(intentTwilioVideo);
-                }
-     		});
+            if (launchActivity) {
+                cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        Intent intentTwilioVideo = new Intent(that.cordova.getActivity().getBaseContext(), TwilioVideoActivity.class);
+                        intentTwilioVideo.putExtra("token", token);
+                        intentTwilioVideo.putExtra("roomId", roomId);
+                        intentTwilioVideo.putExtra("config", config);
+                        // avoid calling other phonegap apps
+                        intentTwilioVideo.setPackage(that.cordova.getActivity().getApplicationContext().getPackageName());
+                        //that.cordova.startActivityForResult(that, intentTwilioVideo);
+                        //that.cordova.getActivity().startActivity(intentTwilioVideo);
+                        that.cordova.startActivityForResult(that, intentTwilioVideo, 0);
+                    }
+                });
+            } else {
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        initWidgetViews();
+                    }
+                });
+            }
         } catch (JSONException e) {
             //Log.e(TAG, "Invalid JSON string: " + json, e);
             //return null;
         }
     }
 
+    public void leaveRoom() {
+        disconnectRoom();
+        finish();
+        // cordova.getActivity().runOnUiThread(new Runnable() {
+        //     public void run() {
+        //     }
+        // });
+    }
+
+    public void widgetVisibility(final Boolean setVisibile) {
+        rootPluginWidget.setVisibility(setVisibile ? View.VISIBLE : View.GONE);
+        publishVisibilityEvent(setVisibile ? CallEvent.WIDGET_SHOW : CallEvent.WIDGET_HIDE);
+    }
+
+    public void toggleMic(final Boolean setEnabled) {
+        muteActionFab.setEnabled(setEnabled);
+        configureAudio(setEnabled);
+        publishMicEvent(setEnabled ? CallEvent.MIC_ENABLED : CallEvent.MIC_DISABLED);
+    }
+
+    public void setActiveSpeaker(final String particpantId) {
+        // TODO: Set Current Active Speaker
+    }
+
     private void initWidgetViews() {
+        publishOpenEvent(CallEvent.OPENED);
         isViewResizeAllowed = config.getEnableWidgetResize();
 
         Activity activity  = cordova.getActivity();
@@ -280,11 +339,11 @@ public class TwilioVideo extends CordovaPlugin {
         switchAudioActionFab.setOnClickListener(switchAudioClickListener());
     }
 
-    private void registerCallListener(final CallbackContext callbackContext) {
+    private void registerCallListener(String type, final CallbackContext callbackContext) {
         if (callbackContext == null) {
             return;
         }
-        CallEventsProducer.getInstance().setObserver(new CallObserver() {
+        CallEventsProducer.getInstance().setObserver(type, new CallObserver() {
             @Override
             public void onEvent(String event) {
                 Log.i("TwilioEvents", "Event received: " + event);
@@ -333,8 +392,24 @@ public class TwilioVideo extends CordovaPlugin {
         return Math.round(px);
     }
 
-    private void publishEvent(CallEvent event) {
-        CallEventsProducer.getInstance().publishEvent(event);
+    private void publishOpenEvent(CallEvent event) {
+        publishEvent(CallEventsProducer.OPEN_LISTENER_KEYWORD, event);
+    }
+
+    private void publishCloseEvent(CallEvent event) {
+        publishEvent(CallEventsProducer.CLOSE_LISTENER_KEYWORD, event);
+    }
+
+    private void publishVisibilityEvent(CallEvent event) {
+        publishEvent(CallEventsProducer.VISIBILITY_LISTENER_KEYWORD, event);
+    }
+
+    private void publishMicEvent(CallEvent event) {
+        publishEvent(CallEventsProducer.MIC_TOGGLE_LISTENER_KEYWORD, event);
+    }
+
+    private void publishEvent(String type, CallEvent event) {
+        CallEventsProducer.getInstance().publishEvent(type, event);
     }
 
     private boolean checkPermissionForCameraAndMicrophone(){
@@ -550,10 +625,37 @@ public class TwilioVideo extends CordovaPlugin {
         resizeActionFab.setOnClickListener(resizeClickListener());
     }
 
+    protected void disconnectRoom() {
+        /*
+         * Always disconnect from the room before leaving the Activity to
+         * ensure any memory allocated to the Room resource is freed.
+         */
+        if (room != null && room.getState() != RoomState.DISCONNECTED) {
+            room.disconnect();
+            disconnectedFromOnDestroy = true;
+        }
+
+        /*
+         * Release the local audio and video tracks ensuring any memory allocated to audio
+         * or video is freed.
+         */
+        if (localAudioTrack != null) {
+            localAudioTrack.release();
+            localAudioTrack = null;
+        }
+
+        if (localVideoTrack != null) {
+            localVideoTrack.release();
+            localVideoTrack = null;
+        }
+    }
+
     protected void finish() {
         configureAudio(false);
         cordova.getActivity().overridePendingTransition(0, 0);
         linearLayout.removeAllViews();
+        publishOpenEvent(CallEvent.CLOSED);
+        publishCloseEvent(CallEvent.CLOSED);
     }
 
 
@@ -565,7 +667,7 @@ public class TwilioVideo extends CordovaPlugin {
             @Override
             public void onConnected(Room room) {
                 localParticipant = room.getLocalParticipant();
-                publishEvent(CallEvent.CONNECTED);
+                publishOpenEvent(CallEvent.CONNECTED);
 
                 for (RemoteParticipant remoteParticipant : room.getRemoteParticipants()) {
                     addRemoteParticipant(remoteParticipant);
@@ -575,7 +677,7 @@ public class TwilioVideo extends CordovaPlugin {
 
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
-                publishEvent(CallEvent.CONNECT_FAILURE);
+                publishOpenEvent(CallEvent.CONNECT_FAILURE);
                 TwilioVideo.this.presentConnectionErrorAlert(config.getI18nConnectionError());
             }
 
@@ -585,22 +687,22 @@ public class TwilioVideo extends CordovaPlugin {
                 TwilioVideo.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy && e != null) {
-                    publishEvent(CallEvent.DISCONNECTED_WITH_ERROR);
+                    publishOpenEvent(CallEvent.DISCONNECTED_WITH_ERROR);
                     TwilioVideo.this.presentConnectionErrorAlert(config.getI18nDisconnectedWithError());
                 } else {
-                    publishEvent(CallEvent.DISCONNECTED);
+                    publishOpenEvent(CallEvent.DISCONNECTED);
                 }
             }
 
             @Override
             public void onParticipantConnected(Room room, RemoteParticipant participant) {
-                publishEvent(CallEvent.PARTICIPANT_CONNECTED);
+                publishOpenEvent(CallEvent.PARTICIPANT_CONNECTED);
                 addRemoteParticipant(participant);
             }
 
             @Override
             public void onParticipantDisconnected(Room room, RemoteParticipant participant) {
-                publishEvent(CallEvent.PARTICIPANT_DISCONNECTED);
+                publishOpenEvent(CallEvent.PARTICIPANT_DISCONNECTED);
                 removeRemoteParticipant(participant);
             }
 
@@ -662,7 +764,7 @@ public class TwilioVideo extends CordovaPlugin {
                         remoteAudioTrack.isEnabled(),
                         remoteAudioTrack.isPlaybackEnabled(),
                         remoteAudioTrack.getName()));
-                publishEvent(CallEvent.AUDIO_TRACK_ADDED);
+                publishOpenEvent(CallEvent.AUDIO_TRACK_ADDED);
             }
 
             @Override
@@ -687,7 +789,7 @@ public class TwilioVideo extends CordovaPlugin {
                         remoteAudioTrack.isEnabled(),
                         remoteAudioTrack.isPlaybackEnabled(),
                         remoteAudioTrack.getName()));
-                publishEvent(CallEvent.AUDIO_TRACK_REMOVED);
+                publishOpenEvent(CallEvent.AUDIO_TRACK_REMOVED);
             }
 
             @Override
@@ -724,7 +826,7 @@ public class TwilioVideo extends CordovaPlugin {
                         remoteParticipant.getIdentity(),
                         remoteVideoTrack.isEnabled(),
                         remoteVideoTrack.getName()));
-                publishEvent(CallEvent.VIDEO_TRACK_ADDED);
+                publishOpenEvent(CallEvent.VIDEO_TRACK_ADDED);
                 addRemoteParticipantVideo(remoteVideoTrack);
             }
 
@@ -749,7 +851,7 @@ public class TwilioVideo extends CordovaPlugin {
                         remoteParticipant.getIdentity(),
                         remoteVideoTrack.isEnabled(),
                         remoteVideoTrack.getName()));
-                publishEvent(CallEvent.VIDEO_TRACK_REMOVED);
+                publishOpenEvent(CallEvent.VIDEO_TRACK_REMOVED);
                 removeParticipantVideo(remoteVideoTrack);
             }
 
@@ -847,7 +949,7 @@ public class TwilioVideo extends CordovaPlugin {
                 int icon;
                 int height;
 
-                if (isViewExpanded == true) {
+                if (isViewExpanded) {
                     height         = Math.round(convertDpToPixel(MINIMIZED_WIDGET_HEIGHT));
                     icon           = R.drawable.ic_expand_white_24px;
                 } else {
@@ -855,7 +957,7 @@ public class TwilioVideo extends CordovaPlugin {
                     icon           = R.drawable.ic_contract_white_24px;
                 }
 
-                linearLayout.setPadding(0, (!! isViewExpanded ? widgetHeightDiff : 0), 0, 0);
+                linearLayout.setPadding(0, (isViewExpanded ? widgetHeightDiff : 0), 0, 0);
                 resizeActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
                 rootPluginWidget.getLayoutParams().height = height;
                 rootPluginWidget.requestLayout();

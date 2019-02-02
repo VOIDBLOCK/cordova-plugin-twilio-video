@@ -13,9 +13,31 @@ declare module TwilioVideo {
          * @param config.i18nConnectionError - Message shown when it is not possible to join the room
          * @param config.i18nDisconnectedWithError - Message show when the client is disconnected due to an error
          * @param config.i18nAccept - Accept translation
-      	 * @param config.handleErrorInApp - (Default = false) Flag to indicate the application will manage any error in the app by events emitted by the plugin
+         * @param config.handleErrorInApp - (Default = false) Flag to indicate the application will manage any error in the app by events emitted by the plugin
+         * @param config.enableWidgetResize - (Default = true) Flag to indicate whether the user can resize the widget or not
+         * @param launchActivity - (Default = false) Flag to indicate whether to open a widget or launch a new acitivity
          */
-        openRoom(token: string, roomName: string, onEvent?: Function, config?: any): void;
+        openRoom(token: string, roomName: string, onEvent?: Function, config?: any, launchActivity: boolean): void;
+        
+        /**
+         * Leave Room
+         */
+        leaveRoom(onEvent?: Function): void;
+        
+        /**
+         * Toggle Widget Visibility Show / Hide
+         */
+        widgetVisibility(setVisible: boolean, onEvent?: Function): void;
+        
+        /**
+         * Toggle Mic Enable / Disable
+         */
+        toggleMic(setEnabled: boolean, onEvent?: Function): void;
+        
+        /**
+         * Set Active Speaker
+         */
+        setActiveSpeaker(particpantId: any, onEvent?: Function): void;
     }
 }
 
