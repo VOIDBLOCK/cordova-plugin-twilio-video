@@ -39,7 +39,7 @@ public class CallEventsProducer {
     }
 
     private CallObserver getListener(String type) {
-        CallObserver listener;
+        CallObserver listener = null;
 
         if (type == OPEN_LISTENER_KEYWORD) {
             listener  = openListener;

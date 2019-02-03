@@ -14,6 +14,7 @@ import com.twilio.video.RemoteParticipant;
 import com.twilio.video.RemoteVideoTrack;
 import com.twilio.video.RemoteVideoTrackPublication;
 import com.twilio.video.Room;
+import com.twilio.video.RoomState;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
 import com.twilio.video.VideoRenderer;
@@ -61,6 +62,7 @@ import org.json.JSONObject;
 import java.util.Collections;
 
 
+// TODO: Support Android API Level 21+
 public class TwilioVideo extends CordovaPlugin {
 
     public static TwilioVideo that;
@@ -75,6 +77,8 @@ public class TwilioVideo extends CordovaPlugin {
     private static float MINIMIZED_WIDGET_HEIGHT       = 104;
     private boolean isViewResizeAllowed = true;
     private boolean isViewExpanded      = false;
+    private boolean isRoomOpen          = false;
+    private boolean isUsingWidget       = true;
 
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "TwilioVideo";
@@ -173,7 +177,8 @@ public class TwilioVideo extends CordovaPlugin {
 		    // this.registerCallListener("set_active_speaker", callbackContext);
 		}
         return true;
-	}
+    }
+    
 
     public void openRoom(final JSONArray args) {
         try {
@@ -200,6 +205,7 @@ public class TwilioVideo extends CordovaPlugin {
             if (launchActivity) {
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
+                        that.isUsingWidget = false;
                         Intent intentTwilioVideo = new Intent(that.cordova.getActivity().getBaseContext(), TwilioVideoActivity.class);
                         intentTwilioVideo.putExtra("token", token);
                         intentTwilioVideo.putExtra("roomId", roomId);
@@ -214,7 +220,8 @@ public class TwilioVideo extends CordovaPlugin {
             } else {
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        initWidgetViews();
+                        that.isUsingWidget = true;
+                        that.initWidgetViews();
                     }
                 });
             }
@@ -225,31 +232,71 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     public void leaveRoom() {
-        disconnectRoom();
-        finish();
-        // cordova.getActivity().runOnUiThread(new Runnable() {
-        //     public void run() {
-        //     }
-        // });
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (!isRoomOpen || !isUsingWidget) {
+                    that.publishCloseEvent(CallEvent.DISCONNECTED);
+                    return;
+                }
+
+                that.disconnectRoom();
+                that.finish();
+            }
+        });
     }
 
     public void widgetVisibility(final Boolean setVisibile) {
-        rootPluginWidget.setVisibility(setVisibile ? View.VISIBLE : View.GONE);
-        publishVisibilityEvent(setVisibile ? CallEvent.WIDGET_SHOW : CallEvent.WIDGET_HIDE);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (!isRoomOpen || !isUsingWidget) {
+                    that.publishVisibilityEvent(CallEvent.DISCONNECTED);
+                    return;
+                }
+
+                that.rootPluginWidget.setVisibility(setVisibile ? View.VISIBLE : View.GONE);
+                that.publishVisibilityEvent(setVisibile ? CallEvent.WIDGET_SHOW : CallEvent.WIDGET_HIDE);
+            }
+        });
     }
 
     public void toggleMic(final Boolean setEnabled) {
-        muteActionFab.setEnabled(setEnabled);
-        configureAudio(setEnabled);
-        publishMicEvent(setEnabled ? CallEvent.MIC_ENABLED : CallEvent.MIC_DISABLED);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (!isRoomOpen || !isUsingWidget) {
+                    that.publishMicEvent(CallEvent.DISCONNECTED);
+                    return;
+                }
+
+                if (setEnabled) {
+                    that.muteActionFab.show();
+                } else {
+                    that.muteActionFab.hide();
+                }
+
+                that.configureAudio(setEnabled);
+                that.publishMicEvent(setEnabled ? CallEvent.MIC_ENABLED : CallEvent.MIC_DISABLED);
+            }
+        });
     }
 
     public void setActiveSpeaker(final String particpantId) {
-        // TODO: Set Current Active Speaker
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (!isRoomOpen || !isUsingWidget) {
+                    // that.publishCloseEvent(CallEvent.DISCONNECTED);
+                    return;
+                }
+
+                // that.
+                // TODO: Set Current Active Speaker
+            }
+        });
     }
+
 
     private void initWidgetViews() {
         publishOpenEvent(CallEvent.OPENED);
+        isRoomOpen          = true;
         isViewResizeAllowed = config.getEnableWidgetResize();
 
         Activity activity  = cordova.getActivity();
@@ -651,6 +698,7 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     protected void finish() {
+        isRoomOpen = false;
         configureAudio(false);
         cordova.getActivity().overridePendingTransition(0, 0);
         linearLayout.removeAllViews();
