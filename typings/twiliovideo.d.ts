@@ -17,7 +17,7 @@ declare module TwilioVideo {
          * @param config.enableWidgetResize - (Default = true) Flag to indicate whether the user can resize the widget or not
          * @param launchActivity - (Default = false) Flag to indicate whether to open a widget or launch a new acitivity
          */
-        openRoom(token: string, roomName: string, onEvent?: Function, config?: any, launchActivity: boolean): void;
+        openRoom(token: string, roomName: string, onEvent?: Function, config?: any, launchActivity?: boolean): void;
         
         /**
          * Leave Room
