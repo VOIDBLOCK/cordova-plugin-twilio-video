@@ -235,7 +235,7 @@ public class TwilioVideo extends CordovaPlugin {
     public void leaveRoom() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                if (!isRoomOpen || !isUsingWidget) {
+                if (!that.isRoomOpen || !that.isUsingWidget) {
                     that.publishCloseEvent(CallEvent.DISCONNECTED);
                     return;
                 }
@@ -249,7 +249,7 @@ public class TwilioVideo extends CordovaPlugin {
     public void widgetVisibility(final Boolean setVisibile) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                if (!isRoomOpen || !isUsingWidget) {
+                if (!that.isRoomOpen || !that.isUsingWidget) {
                     that.publishVisibilityEvent(CallEvent.DISCONNECTED);
                     return;
                 }
@@ -263,7 +263,7 @@ public class TwilioVideo extends CordovaPlugin {
     public void toggleMic(final Boolean setEnabled) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                if (!isRoomOpen || !isUsingWidget) {
+                if (!that.isRoomOpen || !that.isUsingWidget) {
                     that.publishMicEvent(CallEvent.DISCONNECTED);
                     return;
                 }
@@ -283,7 +283,7 @@ public class TwilioVideo extends CordovaPlugin {
     public void setActiveSpeaker(final String particpantId) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                if (!isRoomOpen || !isUsingWidget) {
+                if (!that.isRoomOpen || !that.isUsingWidget) {
                     // that.publishCloseEvent(CallEvent.DISCONNECTED);
                     return;
                 }
