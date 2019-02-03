@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/plugin_root_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/plugin_root_view"
     android:layout_width="match_parent"
     android:layout_height="82dp"
-    android:gravity="center_vertical"
+    android:background="@color/colorWidgetBg"
     android:fitsSystemWindows="true"
-    android:background="#f1f1f1"
+    android:gravity="center_vertical"
+    android:visibility="visible"
     tools:context="org.apache.cordova.twiliovideo.TwilioVideoActivity">
 
     <include layout="@layout/content_video" />
@@ -27,7 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_expand_white_24px"
-            app:backgroundTint="#818181"
+            app:fabCustomSize="@dimen/custom_fab_size"
+            app:elevation="2dp"
+            app:backgroundTint="@color/colorFabResize"
             app:fabSize="mini"
             app:rippleColor="@android:color/holo_blue_bright" />
 
@@ -37,7 +39,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_switch_camera_512dp"
-            app:backgroundTint="#D84E57"
+            app:fabCustomSize="@dimen/custom_fab_size"
+            app:elevation="2dp"
+            app:backgroundTint="@color/colorFabMain"
             app:fabSize="mini"
             app:rippleColor="@android:color/holo_purple" />
 
@@ -47,7 +51,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_phonelink_ring_white_24dp"
-            app:backgroundTint="#D84E57"
+            app:fabCustomSize="@dimen/custom_fab_size"
+            app:elevation="2dp"
+            app:backgroundTint="@color/colorFabMain"
             app:fabSize="mini"
             app:rippleColor="@android:color/holo_purple" />
 
@@ -57,7 +63,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_videocam_green_24px"
-            app:backgroundTint="#D84E57"
+            app:fabCustomSize="@dimen/custom_fab_size"
+            app:elevation="2dp"
+            app:backgroundTint="@color/colorFabMain"
             app:fabSize="mini"
             app:rippleColor="@android:color/holo_purple" />
 
@@ -67,15 +75,17 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_mic_green_24px"
-            app:backgroundTint="#D84E57"
+            app:fabCustomSize="@dimen/custom_fab_size"
+            app:elevation="2dp"
+            app:backgroundTint="@color/colorFabMain"
             app:fabSize="mini"
             app:rippleColor="@android:color/holo_purple" />
 
     </LinearLayout>
 
     <!--<org.apache.cordova.engine.SystemWebView-->
-        <!--android:id="@+id/plugin_cordova_view"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
+    <!--android:id="@+id/plugin_cordova_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
 
 </RelativeLayout>

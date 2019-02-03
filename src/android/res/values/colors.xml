@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorFabMain">#D84E57</color>
+    <color name="colorFabResize">#818181</color>
+    <color name="colorWidgetBg">#e1e1e1</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#b0bec5</color>

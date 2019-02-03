@@ -1,5 +1,6 @@
 package org.apache.cordova.twiliovideo;
 // IMPORT R class HERE
+
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -63,7 +64,6 @@ import org.json.JSONObject;
 import java.util.Collections;
 
 
-// TODO: Support Android API Level 21+
 public class TwilioVideo extends CordovaPlugin {
 
     public static TwilioVideo that;
