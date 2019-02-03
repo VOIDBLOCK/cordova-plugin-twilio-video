@@ -1,6 +1,5 @@
 package org.apache.cordova.twiliovideo;
 // IMPORT R class HERE
-
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
@@ -47,6 +46,8 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -427,13 +428,13 @@ public class TwilioVideo extends CordovaPlugin {
         return (!!returnWidth ? deviceWidth : deviceHeight);
     }
 
-    public static float convertPixelsToDp(float px){
+    public static float convertPixelsToDp(float px) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float dp = px / (metrics.densityDpi / 160f);
         return Math.round(dp);
     }
 
-    public static float convertDpToPixel(float dp){
+    public static float convertDpToPixel(float dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
         return Math.round(px);
@@ -459,21 +460,22 @@ public class TwilioVideo extends CordovaPlugin {
         CallEventsProducer.getInstance().publishEvent(type, event);
     }
 
-    private boolean checkPermissionForCameraAndMicrophone(){
-        int resultCamera = cordova.getContext().checkSelfPermission(Manifest.permission.CAMERA);
-        int resultMic = cordova.getContext().checkSelfPermission(Manifest.permission.RECORD_AUDIO);
+    private boolean checkPermissionForCameraAndMicrophone() {
+        int resultCamera = ContextCompat.checkSelfPermission(cordova.getContext(), Manifest.permission.CAMERA);
+        int resultMic = ContextCompat.checkSelfPermission(cordova.getContext(), Manifest.permission.RECORD_AUDIO);
         return resultCamera == PackageManager.PERMISSION_GRANTED &&
                 resultMic == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermissionForCameraAndMicrophone(){
-        if (cordova.getActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
-                cordova.getActivity().shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {
+    private void requestPermissionForCameraAndMicrophone() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(cordova.getActivity(), Manifest.permission.CAMERA) ||
+                ActivityCompat.shouldShowRequestPermissionRationale(cordova.getActivity(), Manifest.permission.RECORD_AUDIO)) {
             Toast.makeText(cordova.getContext(),
                     R.string.permissions_needed,
                     Toast.LENGTH_LONG).show();
         } else {
-            cordova.getActivity().requestPermissions(
+            ActivityCompat.requestPermissions(
+                    cordova.getActivity(),
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
                     CAMERA_MIC_PERMISSION_REQUEST_CODE);
         }
@@ -1053,7 +1055,7 @@ public class TwilioVideo extends CordovaPlugin {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(audioManager.isSpeakerphoneOn()){
+                if(audioManager.isSpeakerphoneOn()) {
                     audioManager.setSpeakerphoneOn(false);
                 }else{
                     audioManager.setSpeakerphoneOn(true);
