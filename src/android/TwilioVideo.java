@@ -56,7 +56,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.util.Collections;
@@ -124,7 +123,7 @@ public class TwilioVideo extends CordovaPlugin {
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
     private FloatingActionButton switchAudioActionFab;
-    private ProgressBar progressBar;
+    private LinearLayout progressBar;
     private AudioManager audioManager;
     private String participantIdentity;
 
@@ -357,7 +356,7 @@ public class TwilioVideo extends CordovaPlugin {
             connectToRoom();
         }
 
-        hideLoading();
+        // hideLoading();
     }
 
     private void initializeUI() {

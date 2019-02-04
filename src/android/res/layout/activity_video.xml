@@ -9,6 +9,7 @@
     android:fitsSystemWindows="true"
     android:gravity="center_vertical"
     android:visibility="visible"
+    android:animateLayoutChanges="true"
     tools:context="org.apache.cordova.twiliovideo.TwilioVideoActivity">
 
     <include layout="@layout/content_video" />
@@ -83,13 +84,20 @@
 
     </LinearLayout>
 
-    <ProgressBar
+    <LinearLayout
         android:id="@+id/progress_indicator"
-        style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
         android:background="@color/colorWidgetBg"
-        android:visibility="visible" />
+        android:gravity="center"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal">
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_centerInParent="true"
+            android:visibility="visible" />
+    </LinearLayout>
 
 </RelativeLayout>
