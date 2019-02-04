@@ -367,21 +367,21 @@ public class TwilioVideo extends CordovaPlugin {
             resizeActionFab.hide();
         }
 
-//        if (config.getPrimaryColorHex() != null) {
-//            int primaryColor = Color.parseColor(config.getPrimaryColorHex());
-//            ColorStateList color = ColorStateList.valueOf(primaryColor);
-//
-//            resizeActionFab.setBackgroundTintList(color);
-//        }
+        // if (config.getPrimaryColorHex() != null) {
+        //     int primaryColor = Color.parseColor(config.getPrimaryColorHex());
+        //     ColorStateList color = ColorStateList.valueOf(primaryColor);
 
-//        if (config.getSecondaryColorHex() != null) {
-//            int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
-//            ColorStateList color = ColorStateList.valueOf(secondaryColor);
-//            switchCameraActionFab.setBackgroundTintList(color);
-//            localVideoActionFab.setBackgroundTintList(color);
-//            muteActionFab.setBackgroundTintList(color);
-//            switchAudioActionFab.setBackgroundTintList(color);
-//        }
+        //     resizeActionFab.setBackgroundTintList(color);
+        // }
+
+        // if (config.getSecondaryColorHex() != null) {
+        //     int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
+        //     ColorStateList color = ColorStateList.valueOf(secondaryColor);
+        //     switchCameraActionFab.setBackgroundTintList(color);
+        //     localVideoActionFab.setBackgroundTintList(color);
+        //     muteActionFab.setBackgroundTintList(color);
+        //     switchAudioActionFab.setBackgroundTintList(color);
+        // }
 
         switchCameraActionFab.show();
         switchCameraActionFab.setOnClickListener(switchCameraClickListener());
@@ -1073,7 +1073,6 @@ public class TwilioVideo extends CordovaPlugin {
                  * Enable/disable the local video track
                  */
                 if (localVideoTrack != null) {
-                    showLoading();
                     boolean enable = !localVideoTrack.isEnabled();
                     localVideoTrack.enable(enable);
                     int icon;
@@ -1086,7 +1085,6 @@ public class TwilioVideo extends CordovaPlugin {
                     }
 
                     localVideoActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
-                    hideLoading();
                 }
             }
         };

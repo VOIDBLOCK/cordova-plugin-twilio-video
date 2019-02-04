@@ -27,7 +27,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            android:layout_marginEnd="4dp"
             android:src="@drawable/ic_expand_white_24px"
             app:fabCustomSize="@dimen/custom_fab_size"
             app:elevation="2dp"
