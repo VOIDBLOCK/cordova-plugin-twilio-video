@@ -1035,11 +1035,13 @@ public class TwilioVideo extends CordovaPlugin {
                     showLoading();
                     CameraCapturer.CameraSource cameraSource = cameraCapturer.getCameraSource();
                     cameraCapturer.switchCamera();
+
                     if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
                         thumbnailVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     } else {
                         primaryVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     }
+                    
                     hideLoading();
                 }
             }
