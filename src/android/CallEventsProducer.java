@@ -26,8 +26,8 @@ public class CallEventsProducer {
         return instance;
     }
 
-    public void setObserver(String type, CallObserver listener) {
-        setListener(type, listener);
+    public boolean setObserver(String type, CallObserver listener) {
+        return setListener(type, listener);
     }
 
     public void publishEvent(String type, CallEvent event) {
@@ -46,33 +46,34 @@ public class CallEventsProducer {
         CallObserver listener = null;
 
         if (type == OPEN_LISTENER_KEYWORD) {
-            this.listener = openListener;
+            listener = openListener;
         } else if (type == CLOSE_LISTENER_KEYWORD) {
-            this.listener = closeListener;
+            listener = closeListener;
         } else if (type == VISIBILITY_LISTENER_KEYWORD) {
-            this.listener = visibilityListener;
+            listener = visibilityListener;
         } else if (type == MIC_TOGGLE_LISTENER_KEYWORD) {
-            this.listener = micListener;
+            listener = micListener;
         }
 
-        return this.listener;
+        return listener;
     }
 
-    private void setListener(String type, CallObserver listener) {
+    private boolean setListener(String type, CallObserver listener) {
         boolean ret = true;
 
         if (type == OPEN_LISTENER_KEYWORD) {
-            this.openListener = listener;
+            openListener = listener;
         } else if (type == CLOSE_LISTENER_KEYWORD) {
-            this.closeListener = listener;
+            closeListener = listener;
         } else if (type == VISIBILITY_LISTENER_KEYWORD) {
-            this.visibilityListener = listener;
+            visibilityListener = listener;
         } else if (type == MIC_TOGGLE_LISTENER_KEYWORD) {
-            this.micListener = listener;
+            micListener = listener;
         } else {
             ret = false;
         }
 
+        Log.i("Listener set for type: " + type);
         return ret;
     }
 }

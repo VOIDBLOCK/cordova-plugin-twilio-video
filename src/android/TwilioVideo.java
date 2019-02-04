@@ -129,6 +129,7 @@ public class TwilioVideo extends CordovaPlugin {
     private LinearLayout progressBar;
     private AudioManager audioManager;
     private String participantIdentity;
+    private CallEventsProducer eventsEmitter;
 
     private int previousAudioMode;
     private int widgetHeightDiff;
@@ -141,11 +142,15 @@ public class TwilioVideo extends CordovaPlugin {
         super.initialize(cordova, webView);
         this.cordova = cordova;
         that = this;
+        eventsEmitter = CallEventsProducer.getInstance();
         // your init code here
     }
 
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		this.callbackContext = callbackContext;
+        
+        Log.i("Execute called: ", action);
+
 		if (action.equals("openRoom")) {
 		    this.registerCallListener(CallEventsProducer.OPEN_LISTENER_KEYWORD, callbackContext);
 		   	this.openRoom(args);
@@ -401,11 +406,7 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     private void registerCallListener(String type, CallbackContext callbackContext) {
-        // if (callbackContext == null) {
-        //     return;
-        // }
-
-        CallEventsProducer.getInstance().setObserver(type, new CallObserver() {
+        eventsEmitter.setObserver(type, new CallObserver() {
             @Override
             public void onEvent(String event) {
                 Log.i("TwilioEvents: " + type, "Event received: " + event);
@@ -471,7 +472,7 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     private void publishEvent(String type, CallEvent event) {
-        CallEventsProducer.getInstance().publishEvent(type, event);
+        eventsEmitter.publishEvent(type, event);
     }
 
     private boolean checkPermissionForCameraAndMicrophone() {
