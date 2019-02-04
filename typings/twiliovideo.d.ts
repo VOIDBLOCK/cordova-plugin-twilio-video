@@ -15,6 +15,9 @@ declare module TwilioVideo {
          * @param config.i18nAccept - Accept translation
          * @param config.handleErrorInApp - (Default = false) Flag to indicate the application will manage any error in the app by events emitted by the plugin
          * @param config.enableWidgetResize - (Default = true) Flag to indicate whether the user can resize the widget or not
+         * @param config.enableVideo - (Default = true) Flag to indicate whether to enable video or not
+         * @param config.enableAudio - (Default = true) Flag to indicate whether to enable audio or not
+         * @param config.muteMic - (Default = true) Flag to indicate whether to mute user mic by default
          * @param launchActivity - (Default = false) Flag to indicate whether to open a widget or launch a new acitivity
          */
         openRoom(token: string, roomName: string, onEvent?: Function, config?: any, launchActivity?: boolean): void;

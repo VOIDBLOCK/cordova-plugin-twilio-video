@@ -17,6 +17,9 @@ public class CallConfig implements Serializable {
     private static final String i18n_ACCEPT_PROP = "i18nAccept";
     private static final String HANDLE_ERROR_IN_APP = "handleErrorInApp";
     private static final String ALLOW_WIDGET_RESIZE = "enableWidgetResize";
+    private static final String ROOM_ENABLE_VIDEO   = "enableVideo";
+    private static final String ROOM_ENABLE_AUDIO   = "enableAudio";
+    private static final String IS_MIC_MUTED        = "muteMic";
 
     private static final String i18n_CONNECTION_ERROR_DEF_TEXT = "It was not possible to join the room";
     private static final String i18n_DISCONNECTED_WITH_ERROR_DEF_TEXT = "Disconnected";
@@ -29,25 +32,40 @@ public class CallConfig implements Serializable {
     private String i18nAccept;
     private boolean handleErrorInApp;
     private boolean enableWidgetResize;
+    private boolean enableVideo;
+    private boolean enableAudio;
+    private boolean muteMic;
 
     public void parse(JSONObject config) {
-        if (config == null) { return; }
+        if (config == null) {
+            return; 
+        }
+        
         this.primaryColorHex = config.optString(PRIMARY_COLOR_PROP, null);
         this.secondaryColorHex = config.optString(SECONDARY_COLOR_PROP, null);
         this.i18nConnectionError = config.optString(i18n_CONNECTION_ERROR_PROP, null);
+
         if (this.i18nConnectionError == null) {
             this.i18nConnectionError = i18n_CONNECTION_ERROR_DEF_TEXT;
         }
+
         this.i18nDisconnectedWithError = config.optString(i18n_DISCONNECTED_WITH_ERROR_PROP, null);
+
         if (this.i18nDisconnectedWithError == null) {
             this.i18nDisconnectedWithError = i18n_DISCONNECTED_WITH_ERROR_DEF_TEXT;
         }
+
         this.i18nAccept = config.optString(i18n_ACCEPT_PROP, null);
+
         if (this.i18nAccept == null) {
             this.i18nAccept = i18n_ACCEPT_DEF_TEXT;
         }
-        this.handleErrorInApp   = config.optBoolean(HANDLE_ERROR_IN_APP, false);
+
+        this.handleErrorInApp   = config.optBoolean(HANDLE_ERROR_IN_APP, true);
         this.enableWidgetResize = config.optBoolean(ALLOW_WIDGET_RESIZE, true);
+        this.enableVideo        = config.optBoolean(ROOM_ENABLE_VIDEO, true);
+        this.enableAudio        = config.optBoolean(ROOM_ENABLE_AUDIO, true);
+        this.muteMic            = config.optBoolean(IS_MIC_MUTED, false);
     }
 
     public String getPrimaryColorHex() {
@@ -76,5 +94,17 @@ public class CallConfig implements Serializable {
 
     public boolean getEnableWidgetResize() {
         return enableWidgetResize;
+    }
+
+    public boolean getEnableVideo() {
+        return enableVideo;
+    }
+
+    public boolean getEnableAudio() {
+        return enableAudio;
+    }
+
+    public boolean getMuteMic() {
+        return muteMic;
     }
 }

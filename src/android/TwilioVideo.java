@@ -77,6 +77,9 @@ public class TwilioVideo extends CordovaPlugin {
     private boolean isViewResizeAllowed = true;
     private boolean isViewExpanded      = false;
     private boolean isRoomOpen          = false;
+    private boolean isVideoEnabled      = true;
+    private boolean isAudioEnabled      = true;
+    private boolean isMicMuted          = false;
     private boolean isUsingWidget       = true;
 
     private static final int CAMERA_MIC_PERMISSION_REQUEST_CODE = 1;
@@ -203,9 +206,10 @@ public class TwilioVideo extends CordovaPlugin {
             LOG.d("ROOMID", roomId);
 
             if (launchActivity) {
+                isUsingWidget = false;
+                
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
-                        that.isUsingWidget = false;
                         Intent intentTwilioVideo = new Intent(that.cordova.getActivity().getBaseContext(), TwilioVideoActivity.class);
                         intentTwilioVideo.putExtra("token", token);
                         intentTwilioVideo.putExtra("roomId", roomId);
@@ -218,9 +222,10 @@ public class TwilioVideo extends CordovaPlugin {
                     }
                 });
             } else {
+                isUsingWidget = true;
+
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        that.isUsingWidget = true;
                         that.initWidgetViews();
                     }
                 });
@@ -297,10 +302,12 @@ public class TwilioVideo extends CordovaPlugin {
     private void initWidgetViews() {
         publishOpenEvent(CallEvent.OPENED);
 
-        isRoomOpen          = true;
         isViewResizeAllowed = config.getEnableWidgetResize();
+        isVideoEnabled      = config.getEnableVideo();
+        isAudioEnabled      = config.getEnableAudio();
+        isMicMuted          = config.getMuteMic();
+        isRoomOpen          = true;
         isViewExpanded      = false;
-
         Activity activity   = cordova.getActivity();
         int screenW         = getDeviceDimen(true);
         int screenH         = getDeviceDimen(false);
@@ -338,8 +345,8 @@ public class TwilioVideo extends CordovaPlugin {
         progressBar = linearLayout.findViewById(R.id.progress_indicator);
 
         Log.d(TAG, "INIT UI EVENTS & STYLING");
-        initializeUI();
         showLoading();
+        initializeUI();
 
         activity.setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
@@ -356,8 +363,6 @@ public class TwilioVideo extends CordovaPlugin {
             createAudioAndVideoTracks();
             connectToRoom();
         }
-
-        // hideLoading();
     }
 
     private void initializeUI() {
@@ -391,6 +396,8 @@ public class TwilioVideo extends CordovaPlugin {
         muteActionFab.setOnClickListener(muteClickListener());
         switchAudioActionFab.show();
         switchAudioActionFab.setOnClickListener(switchAudioClickListener());
+
+        applyConfigOptions();
     }
 
     private void registerCallListener(String type, final CallbackContext callbackContext) {
@@ -1008,6 +1015,7 @@ public class TwilioVideo extends CordovaPlugin {
                 showLoading();
                 onWidgetResize();
                 hideLoading();
+                publishOpenEvent(isViewExpanded ? CallEvent.WIDGET_MAX : CallEvent.WIDGET_MIN);
             }
         };
     }
@@ -1041,6 +1049,8 @@ public class TwilioVideo extends CordovaPlugin {
                     } else {
                         primaryVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     }
+
+                    publishOpenEvent(cameraCapturer.getActiveCamera() === 1 ? CallEvent.SWITCHED_TO_FRONT_CAMERA : CallEvent.SWITCHED_TO_BACK_CAMERA);
                 }
             }
         };
@@ -1094,19 +1104,24 @@ public class TwilioVideo extends CordovaPlugin {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                 * Enable/disable the local audio track. The results of this operation are
-                 * signaled to other Participants in the same Room. When an audio track is
-                 * disabled, the audio is muted.
-                 */
-                if (localAudioTrack != null) {
-                    boolean enable = !localAudioTrack.isEnabled();
-                    localAudioTrack.enable(enable);
-                    int icon = enable ? R.drawable.ic_mic_green_24px : R.drawable.ic_mic_off_red_24px;
-                    muteActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
-                }
+                onToggleMuteMic(false);
             }
         };
+    }
+
+    /*
+     * Enable/disable the local audio track. The results of this operation are
+     * signaled to other Participants in the same Room. When an audio track is
+     * disabled, the audio is muted.
+     */
+    private void onToggleMuteMic(final boolean forceDisabled) {
+        if (localAudioTrack != null) {
+            boolean enable = forceDisabled ? false : !localAudioTrack.isEnabled();
+            localAudioTrack.enable(enable);
+            int icon = enable ? R.drawable.ic_mic_green_24px : R.drawable.ic_mic_off_red_24px;
+            muteActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
+            publishOpenEvent(enable ? CallEvent.MIC_UNMUTED : CallEvent.MIC_MUTED);
+        }
     }
 
     private void onWidgetResize() {
@@ -1165,5 +1180,27 @@ public class TwilioVideo extends CordovaPlugin {
 
     private void hideLoading() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    private void applyConfigOptions() {
+        isVideoEnabled      = config.getEnableVideo();
+        isAudioEnabled      = config.getEnableAudio();
+        isMicMuted          = config.getMuteMic();
+
+        if (!isVideoEnabled) {
+            localVideoActionFab.hide();
+            switchCameraActionFab.hide();
+            primaryVideoView.setVisibility(View.GONE);
+            thumbnailVideoView.setVisibility(View.GONE);
+        }
+
+        if (!isAudioEnabled) {
+            muteActionFab.hide();
+            switchAudioActionFab.hide();
+        }
+
+        if (!isMicMuted) {
+            onToggleMuteMic(true);
+        }
     }
 }

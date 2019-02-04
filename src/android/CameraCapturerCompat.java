@@ -84,6 +84,10 @@ public class CameraCapturerCompat {
         }
     }
 
+    public int getActiveCamera() {
+        return usingCamera1() ? 1 : 2;
+    }
+
     private boolean usingCamera1() {
         return camera1Capturer != null;
     }

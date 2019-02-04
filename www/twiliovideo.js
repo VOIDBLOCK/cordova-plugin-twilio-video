@@ -8,9 +8,10 @@ TwilioVideo.openRoom = function(token, room, eventCallback, config, launchActivi
     config = !!config ? config : null;
     launchActivity = !!launchActivity;
     exec(function(e) {
-        console.log("Twilio open room event fired: " + e);
         if (eventCallback) {
             eventCallback(e);
+        } else {
+            console.log("Twilio open room event fired: " + e);
         }
     }, null, 'TwilioVideoPlugin', 'openRoom', [token, room, config, launchActivity]);
 };
