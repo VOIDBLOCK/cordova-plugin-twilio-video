@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="18dp"
         android:gravity="top|start"
         android:orientation="horizontal">
 
@@ -83,9 +83,13 @@
 
     </LinearLayout>
 
-    <!--<org.apache.cordova.engine.SystemWebView-->
-    <!--android:id="@+id/plugin_cordova_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent" />-->
+    <ProgressBar
+        android:id="@+id/progress_indicator"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="@color/colorWidgetBg"
+        android:visibility="visible" />
 
 </RelativeLayout>

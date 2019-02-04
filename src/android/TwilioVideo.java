@@ -51,22 +51,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import org.apache.cordova.twiliovideo.TwilioVideoActivity;
-import org.json.JSONObject;
 import java.util.Collections;
 
 
 public class TwilioVideo extends CordovaPlugin {
 
-    public static TwilioVideo that;
+    public TwilioVideo that;
 
     public CallbackContext callbackContext;
     private CordovaInterface cordova;
@@ -75,7 +73,8 @@ public class TwilioVideo extends CordovaPlugin {
     private CallConfig config = new CallConfig();
 
     private LinearLayout linearLayout;
-    private static float MINIMIZED_WIDGET_HEIGHT       = 104;
+    private static float MINIMIZED_WIDGET_HEIGHT        = 104;
+    private static float MINIMIZED_PRIMARY_VIDEO_HEIGHT = 56;
     private boolean isViewResizeAllowed = true;
     private boolean isViewExpanded      = false;
     private boolean isRoomOpen          = false;
@@ -125,6 +124,7 @@ public class TwilioVideo extends CordovaPlugin {
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
     private FloatingActionButton switchAudioActionFab;
+    private ProgressBar progressBar;
     private AudioManager audioManager;
     private String participantIdentity;
 
@@ -297,17 +297,19 @@ public class TwilioVideo extends CordovaPlugin {
 
     private void initWidgetViews() {
         publishOpenEvent(CallEvent.OPENED);
+
         isRoomOpen          = true;
         isViewResizeAllowed = config.getEnableWidgetResize();
+        isViewExpanded      = false;
 
-        Activity activity  = cordova.getActivity();
-        int screenW        = getDeviceDimen(true);
-        int screenH        = getDeviceDimen(false);
-        int widgetH        = Math.round(convertDpToPixel(MINIMIZED_WIDGET_HEIGHT));
-        int heightDiff     = Math.round(screenH - widgetH);
-        LayoutParams tlp   = new LayoutParams(screenW, screenH);
-        LayoutParams wlp   = new LayoutParams(screenW, widgetH);
-        View nativeCtrls   = activity.getLayoutInflater().inflate(R.layout.activity_video, null);
+        Activity activity   = cordova.getActivity();
+        int screenW         = getDeviceDimen(true);
+        int screenH         = getDeviceDimen(false);
+        int widgetH         = Math.round(convertDpToPixel(MINIMIZED_WIDGET_HEIGHT));
+        int heightDiff      = Math.round(screenH - widgetH);
+        LayoutParams tlp    = new LayoutParams(screenW, screenH);
+        LayoutParams wlp    = new LayoutParams(screenW, widgetH);
+        View nativeCtrls    = activity.getLayoutInflater().inflate(R.layout.activity_video, null);
 
         nativeCtrls.setLayoutParams(wlp);
 
@@ -334,13 +336,17 @@ public class TwilioVideo extends CordovaPlugin {
         localVideoActionFab = linearLayout.findViewById(R.id.local_video_action_fab);
         muteActionFab = linearLayout.findViewById(R.id.mute_action_fab);
         switchAudioActionFab = linearLayout.findViewById(R.id.switch_audio_action_fab);
+        progressBar = linearLayout.findViewById(R.id.progress_indicator);
+
+        Log.d(TAG, "INIT UI EVENTS & STYLING");
+        initializeUI();
 
         activity.setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
         audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setSpeakerphoneOn(true);
 
-        Log.d(TAG, "BEFORE REQUEST PERMISSIONS");
+        Log.d(TAG, "PERMISSIONS CHECK");
 
         if (!checkPermissionForCameraAndMicrophone()) {
             Log.d(TAG, "REQUEST PERMISSIONS");
@@ -351,7 +357,7 @@ public class TwilioVideo extends CordovaPlugin {
             connectToRoom();
         }
 
-        initializeUI();
+        hideLoading();
     }
 
     private void initializeUI() {
@@ -361,21 +367,21 @@ public class TwilioVideo extends CordovaPlugin {
             resizeActionFab.hide();
         }
 
-        if (config.getPrimaryColorHex() != null) {
-            int primaryColor = Color.parseColor(config.getPrimaryColorHex());
-            ColorStateList color = ColorStateList.valueOf(primaryColor);
+//        if (config.getPrimaryColorHex() != null) {
+//            int primaryColor = Color.parseColor(config.getPrimaryColorHex());
+//            ColorStateList color = ColorStateList.valueOf(primaryColor);
+//
+//            resizeActionFab.setBackgroundTintList(color);
+//        }
 
-            resizeActionFab.setBackgroundTintList(color);
-        }
-
-        if (config.getSecondaryColorHex() != null) {
-            int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
-            ColorStateList color = ColorStateList.valueOf(secondaryColor);
-            switchCameraActionFab.setBackgroundTintList(color);
-            localVideoActionFab.setBackgroundTintList(color);
-            muteActionFab.setBackgroundTintList(color);
-            switchAudioActionFab.setBackgroundTintList(color);
-        }
+//        if (config.getSecondaryColorHex() != null) {
+//            int secondaryColor = Color.parseColor(config.getSecondaryColorHex());
+//            ColorStateList color = ColorStateList.valueOf(secondaryColor);
+//            switchCameraActionFab.setBackgroundTintList(color);
+//            localVideoActionFab.setBackgroundTintList(color);
+//            muteActionFab.setBackgroundTintList(color);
+//            switchAudioActionFab.setBackgroundTintList(color);
+//        }
 
         switchCameraActionFab.show();
         switchCameraActionFab.setOnClickListener(switchCameraClickListener());
@@ -503,14 +509,20 @@ public class TwilioVideo extends CordovaPlugin {
 
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
-            thumbnailVideoView.setVisibility(View.VISIBLE);
+
+//            if (isViewExpanded) {
+//                thumbnailVideoView.setVisibility(View.VISIBLE);
+//            }
+
             if(localVideoTrack!=null) {
                 localVideoTrack.removeRenderer(primaryVideoView);
                 localVideoTrack.addRenderer(thumbnailVideoView);
             }
+
             if(localVideoView != null && thumbnailVideoView != null) {
                 localVideoView = thumbnailVideoView;
             }
+
             thumbnailVideoView.setMirror(cameraCapturer.getCameraSource() ==
                     CameraCapturer.CameraSource.FRONT_CAMERA);
         }
@@ -723,6 +735,8 @@ public class TwilioVideo extends CordovaPlugin {
                     addRemoteParticipant(remoteParticipant);
                     break;
                 }
+
+                hideLoading();
             }
 
             @Override
@@ -991,29 +1005,9 @@ public class TwilioVideo extends CordovaPlugin {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Resize button clicked!");
-
-                if (! isViewResizeAllowed) {
-                    return;
-                }
-
-                int icon;
-                int height;
-
-                if (isViewExpanded) {
-                    height         = Math.round(convertDpToPixel(MINIMIZED_WIDGET_HEIGHT));
-                    icon           = R.drawable.ic_expand_white_24px;
-                } else {
-                    height         = getDeviceDimen(false);
-                    icon           = R.drawable.ic_contract_white_24px;
-                }
-
-                linearLayout.setPadding(0, (isViewExpanded ? widgetHeightDiff : 0), 0, 0);
-                resizeActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
-                rootPluginWidget.getLayoutParams().height = height;
-                rootPluginWidget.requestLayout();
-                cordova.getActivity().overridePendingTransition(0, 0);
-
-                isViewExpanded = !isViewExpanded;
+                showLoading();
+                onWidgetResize();
+                hideLoading();
             }
         };
     }
@@ -1039,6 +1033,7 @@ public class TwilioVideo extends CordovaPlugin {
             @Override
             public void onClick(View v) {
                 if (cameraCapturer != null) {
+                    showLoading();
                     CameraCapturer.CameraSource cameraSource = cameraCapturer.getCameraSource();
                     cameraCapturer.switchCamera();
                     if (thumbnailVideoView.getVisibility() == View.VISIBLE) {
@@ -1046,6 +1041,7 @@ public class TwilioVideo extends CordovaPlugin {
                     } else {
                         primaryVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     }
+                    hideLoading();
                 }
             }
         };
@@ -1055,6 +1051,8 @@ public class TwilioVideo extends CordovaPlugin {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showLoading();
+
                 if(audioManager.isSpeakerphoneOn()) {
                     audioManager.setSpeakerphoneOn(false);
                 }else{
@@ -1066,6 +1064,7 @@ public class TwilioVideo extends CordovaPlugin {
                         R.drawable.ic_phonelink_ring_white_24dp : R.drawable.ic_volume_headhphones_white_24dp;
 
                 switchAudioActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
+                hideLoading();
             }
         };
     }
@@ -1078,6 +1077,7 @@ public class TwilioVideo extends CordovaPlugin {
                  * Enable/disable the local video track
                  */
                 if (localVideoTrack != null) {
+                    showLoading();
                     boolean enable = !localVideoTrack.isEnabled();
                     localVideoTrack.enable(enable);
                     int icon;
@@ -1090,6 +1090,7 @@ public class TwilioVideo extends CordovaPlugin {
                     }
 
                     localVideoActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
+                    hideLoading();
                 }
             }
         };
@@ -1112,5 +1113,63 @@ public class TwilioVideo extends CordovaPlugin {
                 }
             }
         };
+    }
+
+    private void onWidgetResize() {
+        if (! isViewResizeAllowed) {
+            return;
+        }
+
+        int icon;
+        int height;
+        int pvHeight;
+        int pvWidth;
+        int pvRad = Math.round(convertDpToPixel(MINIMIZED_PRIMARY_VIDEO_HEIGHT));
+        int db12  = Math.round(convertDpToPixel(12));
+        int db10  = Math.round(convertDpToPixel(10));
+
+        FrameLayout.LayoutParams pvlp = (FrameLayout.LayoutParams) primaryVideoView.getLayoutParams();
+
+        thumbnailVideoView.setVisibility(isViewExpanded ? View.GONE: View.VISIBLE);
+
+        if (isViewExpanded) {
+            pvHeight       = pvRad;
+            pvWidth        = pvRad;
+            height         = Math.round(convertDpToPixel(MINIMIZED_WIDGET_HEIGHT));
+            icon           = R.drawable.ic_expand_white_24px;
+
+            pvlp.setMargins(0, db12, 0, 0);
+            pvlp.setMarginEnd(db10);
+        } else {
+            pvHeight       = getDeviceDimen(false);
+            pvWidth        = getDeviceDimen(true);
+            height         = getDeviceDimen(false);
+            icon           = R.drawable.ic_contract_white_24px;
+
+            pvlp.setMargins(0, 0, 0, 0);
+            pvlp.setMarginEnd(0);
+        }
+
+        linearLayout.setPadding(0, (isViewExpanded ? widgetHeightDiff : 0), 0, 0);
+        resizeActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
+        rootPluginWidget.getLayoutParams().height = height;
+        rootPluginWidget.requestLayout();
+
+        primaryVideoView.setLayoutParams(pvlp);
+        primaryVideoView.getLayoutParams().height = pvHeight;
+        primaryVideoView.getLayoutParams().width  = pvWidth;
+        primaryVideoView.requestLayout();
+
+        cordova.getActivity().overridePendingTransition(0, 0);
+
+        isViewExpanded = !isViewExpanded;
+    }
+
+    private void showLoading() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoading() {
+        progressBar.setVisibility(View.GONE);
     }
 }
