@@ -1050,7 +1050,8 @@ public class TwilioVideo extends CordovaPlugin {
                         primaryVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     }
 
-                    publishOpenEvent(cameraCapturer.getActiveCamera() === 1 ? CallEvent.SWITCHED_TO_FRONT_CAMERA : CallEvent.SWITCHED_TO_BACK_CAMERA);
+                    final int activeCam = cameraCapturer.getActiveCamera();
+                    publishOpenEvent((activeCam == 1) ? CallEvent.SWITCHED_TO_FRONT_CAMERA : CallEvent.SWITCHED_TO_BACK_CAMERA);
                 }
             }
         };
