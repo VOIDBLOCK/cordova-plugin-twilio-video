@@ -339,6 +339,7 @@ public class TwilioVideo extends CordovaPlugin {
 
         Log.d(TAG, "INIT UI EVENTS & STYLING");
         initializeUI();
+        showLoading();
 
         activity.setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
@@ -1032,7 +1033,6 @@ public class TwilioVideo extends CordovaPlugin {
             @Override
             public void onClick(View v) {
                 if (cameraCapturer != null) {
-                    showLoading();
                     CameraCapturer.CameraSource cameraSource = cameraCapturer.getCameraSource();
                     cameraCapturer.switchCamera();
 
@@ -1041,8 +1041,6 @@ public class TwilioVideo extends CordovaPlugin {
                     } else {
                         primaryVideoView.setMirror(cameraSource == CameraCapturer.CameraSource.BACK_CAMERA);
                     }
-                    
-                    hideLoading();
                 }
             }
         };
@@ -1052,8 +1050,6 @@ public class TwilioVideo extends CordovaPlugin {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLoading();
-
                 if(audioManager.isSpeakerphoneOn()) {
                     audioManager.setSpeakerphoneOn(false);
                 }else{
@@ -1065,7 +1061,6 @@ public class TwilioVideo extends CordovaPlugin {
                         R.drawable.ic_phonelink_ring_white_24dp : R.drawable.ic_volume_headhphones_white_24dp;
 
                 switchAudioActionFab.setImageDrawable(cordova.getContext().getResources().getDrawable(icon));
-                hideLoading();
             }
         };
     }
