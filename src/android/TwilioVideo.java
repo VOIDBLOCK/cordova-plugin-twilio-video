@@ -149,7 +149,7 @@ public class TwilioVideo extends CordovaPlugin {
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		this.callbackContext = callbackContext;
         
-        Log.i("Execute called: ", action);
+        Log.i(TAG, "Execute called: " + action);
 
 		if (action.equals("openRoom")) {
 		    this.registerCallListener(CallEventsProducer.OPEN_LISTENER_KEYWORD, callbackContext);
@@ -409,7 +409,7 @@ public class TwilioVideo extends CordovaPlugin {
         eventsEmitter.setObserver(type, new CallObserver() {
             @Override
             public void onEvent(String event) {
-                Log.i("TwilioEvents: " + type, "Event received: " + event);
+                Log.i("TwilioEvents", "Event (" + type + ") received: " + event);
                 PluginResult result = new PluginResult(PluginResult.Status.OK, event);
                 result.setKeepCallback(true);
                 callbackContext.sendPluginResult(result);

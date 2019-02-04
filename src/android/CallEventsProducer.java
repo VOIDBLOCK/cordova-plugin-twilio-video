@@ -34,7 +34,7 @@ public class CallEventsProducer {
         if (hasListener(type)) {
             getListener(type).onEvent(event.name());
         } else {
-            Log.i("TwilioEvents: " + type, "Event " + event + " has no assigned listeners!");
+            Log.i("TwilioEvents", "Event " + type + ":" + event + " has no assigned listeners!");
         }
     }
 
@@ -73,7 +73,7 @@ public class CallEventsProducer {
             ret = false;
         }
 
-        Log.i("Listener set for type: " + type);
+        Log.i("TwilioEventsProducer", "Listener set for type: " + type);
         return ret;
     }
 }
