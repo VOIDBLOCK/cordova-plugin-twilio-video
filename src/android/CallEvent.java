@@ -2,6 +2,7 @@ package org.apache.cordova.twiliovideo;
 
 /**
  * Created by rpanadero on 13/9/18.
+ * Further Developed by VOIDBLOCK TEAM
  */
 
 public enum CallEvent { OPENED, CONNECTED, CONNECT_FAILURE, DISCONNECTED, DISCONNECTED_WITH_ERROR, PARTICIPANT_CONNECTED, 

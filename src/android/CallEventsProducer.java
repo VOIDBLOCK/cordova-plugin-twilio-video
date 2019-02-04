@@ -1,10 +1,11 @@
 package org.apache.cordova.twiliovideo;
 
+import android.util.Log;
 
 /**
  * Created by rpanadero on 13/9/18.
+ * Further Developed by VOIDBLOCK TEAM
  */
-
 public class CallEventsProducer {
     public static final String OPEN_LISTENER_KEYWORD       = "open";
     public static final String CLOSE_LISTENER_KEYWORD      = "close";
@@ -21,6 +22,7 @@ public class CallEventsProducer {
         if (instance == null) {
             instance = new CallEventsProducer();
         }
+        
         return instance;
     }
 
@@ -31,6 +33,8 @@ public class CallEventsProducer {
     public void publishEvent(String type, CallEvent event) {
         if (hasListener(type)) {
             getListener(type).onEvent(event.name());
+        } else {
+            Log.i("TwilioEvents: " + type, "Event " + event + " has no assigned listeners!");
         }
     }
 
@@ -42,27 +46,33 @@ public class CallEventsProducer {
         CallObserver listener = null;
 
         if (type == OPEN_LISTENER_KEYWORD) {
-            listener  = openListener;
+            this.listener = openListener;
         } else if (type == CLOSE_LISTENER_KEYWORD) {
-            listener = closeListener;
+            this.listener = closeListener;
         } else if (type == VISIBILITY_LISTENER_KEYWORD) {
-            listener = visibilityListener;
+            this.listener = visibilityListener;
         } else if (type == MIC_TOGGLE_LISTENER_KEYWORD) {
-            listener = micListener;
+            this.listener = micListener;
         }
 
-        return listener;
+        return this.listener;
     }
 
     private void setListener(String type, CallObserver listener) {
+        boolean ret = true;
+
         if (type == OPEN_LISTENER_KEYWORD) {
-            openListener  = listener;
+            this.openListener = listener;
         } else if (type == CLOSE_LISTENER_KEYWORD) {
-            closeListener = listener;
+            this.closeListener = listener;
         } else if (type == VISIBILITY_LISTENER_KEYWORD) {
-            visibilityListener = listener;
+            this.visibilityListener = listener;
         } else if (type == MIC_TOGGLE_LISTENER_KEYWORD) {
-            micListener = listener;
+            this.micListener = listener;
+        } else {
+            ret = false;
         }
+
+        return ret;
     }
 }

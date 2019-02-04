@@ -222,7 +222,7 @@ public class TwilioVideo extends CordovaPlugin {
                     }
                 });
             } else {
-                isUsingWidget = true;
+                that.isUsingWidget = true;
 
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
@@ -400,14 +400,15 @@ public class TwilioVideo extends CordovaPlugin {
         applyConfigOptions();
     }
 
-    private void registerCallListener(String type, final CallbackContext callbackContext) {
-        if (callbackContext == null) {
-            return;
-        }
+    private void registerCallListener(String type, CallbackContext callbackContext) {
+        // if (callbackContext == null) {
+        //     return;
+        // }
+
         CallEventsProducer.getInstance().setObserver(type, new CallObserver() {
             @Override
             public void onEvent(String event) {
-                Log.i("TwilioEvents", "Event received: " + event);
+                Log.i("TwilioEvents: " + type, "Event received: " + event);
                 PluginResult result = new PluginResult(PluginResult.Status.OK, event);
                 result.setKeepCallback(true);
                 callbackContext.sendPluginResult(result);
@@ -1115,7 +1116,7 @@ public class TwilioVideo extends CordovaPlugin {
      * signaled to other Participants in the same Room. When an audio track is
      * disabled, the audio is muted.
      */
-    private void onToggleMuteMic(final boolean forceDisabled) {
+    private void onToggleMuteMic(boolean forceDisabled) {
         if (localAudioTrack != null) {
             boolean enable = forceDisabled ? false : !localAudioTrack.isEnabled();
             localAudioTrack.enable(enable);
