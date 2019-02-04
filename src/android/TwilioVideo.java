@@ -1202,7 +1202,7 @@ public class TwilioVideo extends CordovaPlugin {
             switchAudioActionFab.hide();
         }
 
-        if (!isMicMuted) {
+        if (isMicMuted) {
             onToggleMuteMic(true);
         }
     }
