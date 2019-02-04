@@ -508,10 +508,10 @@ public class TwilioVideo extends CordovaPlugin {
 
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
+            thumbnailVideoView.setVisibility(View.VISIBLE);
 
-//            if (isViewExpanded) {
-//                thumbnailVideoView.setVisibility(View.VISIBLE);
-//            }
+            // if (isViewExpanded) {
+            // }
 
             if(localVideoTrack!=null) {
                 localVideoTrack.removeRenderer(primaryVideoView);
@@ -1129,7 +1129,7 @@ public class TwilioVideo extends CordovaPlugin {
 
         FrameLayout.LayoutParams pvlp = (FrameLayout.LayoutParams) primaryVideoView.getLayoutParams();
 
-        thumbnailVideoView.setVisibility(isViewExpanded ? View.GONE: View.VISIBLE);
+        // thumbnailVideoView.setVisibility(isViewExpanded ? View.GONE: View.VISIBLE);
 
         if (isViewExpanded) {
             pvHeight       = pvRad;
