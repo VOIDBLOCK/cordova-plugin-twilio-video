@@ -368,6 +368,8 @@ public class TwilioVideo extends CordovaPlugin {
             createAudioAndVideoTracks();
             connectToRoom();
         }
+        
+        applyConfigOptions();
     }
 
     private void initializeUI() {
@@ -401,8 +403,6 @@ public class TwilioVideo extends CordovaPlugin {
         muteActionFab.setOnClickListener(muteClickListener());
         switchAudioActionFab.show();
         switchAudioActionFab.setOnClickListener(switchAudioClickListener());
-
-        applyConfigOptions();
     }
 
     private void registerCallListener(String type, CallbackContext callbackContext) {
@@ -519,9 +519,6 @@ public class TwilioVideo extends CordovaPlugin {
     private void moveLocalVideoToThumbnailView() {
         if (thumbnailVideoView.getVisibility() == View.GONE) {
             thumbnailVideoView.setVisibility(View.VISIBLE);
-
-            // if (isViewExpanded) {
-            // }
 
             if(localVideoTrack!=null) {
                 localVideoTrack.removeRenderer(primaryVideoView);
