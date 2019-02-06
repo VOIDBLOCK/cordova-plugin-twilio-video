@@ -131,7 +131,7 @@ public class TwilioVideo extends CordovaPlugin {
     private String participantIdentity;
     private CallEventsProducer eventsEmitter;
 
-    private int previousAudioMode;
+    private int previousAudioMode = -666;
     private int widgetHeightDiff;
     private boolean previousMicrophoneMute;
     private VideoRenderer localVideoView;
@@ -227,11 +227,11 @@ public class TwilioVideo extends CordovaPlugin {
                     }
                 });
             } else {
-                that.isUsingWidget = true;
+                isUsingWidget = true;
 
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        that.initWidgetViews();
+                        initWidgetViews();
                     }
                 });
             }
@@ -497,10 +497,8 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     private void createAudioAndVideoTracks() {
-        // Share your microphone
         localAudioTrack = LocalAudioTrack.create(cordova.getContext(), true, LOCAL_AUDIO_TRACK_NAME);
 
-        // Share your camera
         cameraCapturer = new CameraCapturerCompat(cordova.getContext(), getAvailableCameraSource());
         localVideoTrack = LocalVideoTrack.create(cordova.getContext(),
                 true,
@@ -643,6 +641,10 @@ public class TwilioVideo extends CordovaPlugin {
     }
 
     private void configureAudio(boolean enable) {
+        if (localAudioTrack == null || previousAudioMode == -666) {
+            return;
+        }
+
         if (enable) {
             previousAudioMode = audioManager.getMode();
             // Request audio focus before making any device switch
@@ -720,7 +722,7 @@ public class TwilioVideo extends CordovaPlugin {
     protected void finish() {
         isRoomOpen = false;
         configureAudio(false);
-        cordova.getActivity().overridePendingTransition(0, 0);
+        overrideTransition();
         linearLayout.removeAllViews();
         publishOpenEvent(CallEvent.CLOSED);
         publishCloseEvent(CallEvent.CLOSED);
@@ -1169,8 +1171,7 @@ public class TwilioVideo extends CordovaPlugin {
         primaryVideoView.getLayoutParams().width  = pvWidth;
         primaryVideoView.requestLayout();
 
-        cordova.getActivity().overridePendingTransition(0, 0);
-
+        overrideTransition();
         isViewExpanded = !isViewExpanded;
     }
 
@@ -1202,5 +1203,10 @@ public class TwilioVideo extends CordovaPlugin {
         if (isMicMuted) {
             onToggleMuteMic(true);
         }
+    }
+
+    private void overrideTransition() {
+        cordova.getActivity().overridePendingTransition(0, 0);
+        //ActivityCompat.overridePendingTransition
     }
 }
